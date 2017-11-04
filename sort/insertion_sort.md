@@ -8,7 +8,7 @@
 ## 排序流程
 可以通过插牌的过程理解插入排序：
 
-![](images\sort_insertion_1.jpg)
+![](https://github.com/jiaweiM/algorithm/blob/master/images/sort_insertion_1.jpg?raw=true)
 
 - 一串随机排序的数
 - 取第一个数
@@ -27,8 +27,6 @@
 - 需要两个循环，一个用于从未排序列表中取数字，一个用于在已排序好的列表中找到待插入数的位置。
 
 ### 伪代码
-
-`INSERTION_SORT(A)`
 ```pseudocode
 for j = 2 to A.length
     key = A[j]
