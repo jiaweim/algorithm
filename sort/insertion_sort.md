@@ -1,4 +1,17 @@
+# 插入排序
+
+- [插入排序](#插入排序)
+  - [插入排序特征](#插入排序特征)
+  - [排序流程](#排序流程)
+  - [代码实现](#代码实现)
+    - [伪代码](#伪代码)
+    - [Java](#java)
+
+2021-05-28, 09:40
+***
+
 ## 插入排序特征
+
 - 对比排序
 - 原地排序
 - 平均时间复杂度：O(n^2)
@@ -6,6 +19,7 @@
 - 对少量元素的排序比较有效，对大量元素不如 quicksort, heapsort 或 mergesort有效
 
 ## 排序流程
+
 可以通过插牌的过程理解插入排序：
 
 ![](https://github.com/jiaweiM/algorithm/blob/master/images/sort_insertion_1.jpg?raw=true)
@@ -16,8 +30,12 @@
 - 现在前两个是排序好的
 - 继续该过程直到结束，每次添加一个新的数字，数字都是排序好的
 
+![](images/insertionSort.gif)
+
 ## 代码实现
+
 要点说明：
+
 - 使用原地排序，需要创建一个临时变量
 - 每次迭代，列表的一端是已排序好的数
     - 第一次迭代，前两个数已排序
@@ -27,6 +45,7 @@
 - 需要两个循环，一个用于从未排序列表中取数字，一个用于在已排序好的列表中找到待插入数的位置。
 
 ### 伪代码
+
 ```pseudocode
 for j = 2 to A.length
     key = A[j]
@@ -39,6 +58,7 @@ for j = 2 to A.length
 ```
 
 ### Java
+
 ```java
 public static <T extends Comparable<T>> T[] insertSort(T[] unsorted)
 {
