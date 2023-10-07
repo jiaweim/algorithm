@@ -60,3 +60,30 @@ key 对应的值不能为 `null`。该约定直接与 API 的实现有关，API 
 
 **Deletion**
 
+symbol-table 中的删除操作有两种策略：
+
+- lazy 删除，即将要删除的 key 的值设置为 null，然后在以后的某个时间删除所有这些 keys；
+- eager 删除，立即从 table 中删除 key.
+
+方法 `put(key, null)` 为 `delete(key)` 的 lazy 实现。`delete()` 则提供 eager 实现。
+
+为了保证 lazy 实现的有效，在 `put()` 实现中添加防御代码：
+
+```java
+if (val == null) { delete(key); return; }
+```
+
+以确保 symbol-table 中没有与 null 关联的 key。
+
+**其它快捷方法**
+
+为了让客户端代码更清晰，在 API 中包含了 contains() 和 isEmpty() 方法，默认的单行实现如下。为了简介，接下来不重复这些代码，但假设在所有 symbol-table API 实现中都包含这些方法。
+
+|method|default implementation|
+|---|---|
+|void delete(Key key)|put(key, null);|
+|boolean contains(key)|return get(key) != null;|
+|boolean isEmpty()|return size() == 0;|
+
+**迭代**
+
