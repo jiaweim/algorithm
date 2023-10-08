@@ -908,7 +908,7 @@ binary search 通常比 sequential search 好得多，在许多实际应用中�
 |---|---|---|---|
 |linked list (sequential search)|SequentialSearchST|best for tiny STs|slow for large STs|
 |ordered array (binary search)|BinarySearchST|optimal search and space, order-based ops|slow insert|
-|binary search tree|BST|easy to implement, order-based ops|no guarantees space for links|
+|二叉搜索树|BST|easy to implement, order-based ops|no guarantees space for links|
 |balanced BST|RedBlackBST|optimal search and insert, order-based ops|space for links|
 |hash table|SeparateChainingHashST, LinearProbingHashST|fast search/insert for common types of data|need hash for each type no order-based ops space for links/empty|
 
