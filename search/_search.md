@@ -11,6 +11,10 @@
 
 下面介绍三种支持高效 symbol-table 实现的经典数据结构：二叉查找树（binary search tree）、红黑树（red-black tree）和哈希表（hash table）。
 
+## TOC
+
+- [符号表](./symbol_table.md)
+
 ## 参考
 
 - 《Algorithms, 4ed, 2011》Robert Sedgewick & Kevin Wayne
