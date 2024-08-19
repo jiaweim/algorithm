@@ -1,24 +1,12 @@
 # 符号表
 
-- [符号表](#符号表)
-  - [简介](#简介)
-  - [API](#api)
-  - [Ordered symbol table](#ordered-symbol-table)
-  - [Sample client](#sample-client)
-    - [Test client](#test-client)
-    - [Performance client](#performance-client)
-  - [Sequential search in an unordered linked list](#sequential-search-in-an-unordered-linked-list)
-  - [Binary search in an ordered array](#binary-search-in-an-ordered-array)
-    - [binary search 性能](#binary-search-性能)
-  - [总结](#总结)
-
-Last updated: 2023-10-08, 17:46
+Last updated: 2023-10-08
 @author Jiawei Mao
 ****
 
 ## 简介
 
-符号表（symbol-table）主要用来将 value 与 key 关联起来。用户可以向 symbol-table 插入 key-value 对，期望稍后能够从 symbol-table 中检索与指定 key 关联的 value。
+符号表（symbol-table）用于将 value 与 key 关联起来。用户可以向 symbol-table 插入 key-value 对，期望稍后能够从 symbol-table 中检索与指定 key 关联的 value。
 
 实现 symbol-table 数据结构有多种，要求 insert 和 search 操作高效，并提供其它一些便捷操作。要实现 symbol-table，需要定义一个底层数据结构，然后为插入、搜索和其他创建和操作该数据结构的操作实现算法。
 
