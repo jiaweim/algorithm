@@ -1,75 +1,75 @@
 # 最短路径
 
 - [最短路径](#最短路径)
-  - [Path in Unweighted Graph](#path-in-unweighted-graph)
-    - [Path in directed unweighted graph](#path-in-directed-unweighted-graph)
-  - [Path in Weighted Graphs](#path-in-weighted-graphs)
-  - [最短路径问题](#最短路径问题)
+  - [1. 无向无权图的路径](#1-无向无权图的路径)
+  - [2. 有向无权图的路径](#2-有向无权图的路径)
+  - [3. 有权图的路径](#3-有权图的路径)
+  - [4. 最短路径问题](#4-最短路径问题)
 
 2024-08-19
 ***
 
-## Path in Unweighted Graph
+## 1. 无向无权图的路径
 
 路径定义：
 
-<img src="./images/image-20240819143648946.png" alt="image-20240819143648946" style="zoom:50%;" />
+<img src="./images/image-20240819143648946.png" alt="image-20240819143648946" style="zoom: 33%;" />
 
 路径长度定义：
 
-<img src="./images/image-20240819143909296.png" alt="image-20240819143909296" style="zoom:50%;" />
+<img src="./images/image-20240819143909296.png" alt="image-20240819143909296" style="zoom: 33%;" />
 
 如果是有权图，则需要考虑边的权重。
 
 **简单路径（simple-path）**
 
-<img src="./images/image-20240819144101536.png" alt="image-20240819144101536" style="zoom:50%;" />
+<img src="./images/image-20240819144101536.png" alt="image-20240819144101536" style="zoom: 33%;" />
 
 简单路径：路径上没有重复节点。
 
 上图不是一个简单路径（路径中 v4 出现两次）。
 
-<img src="./images/image-20240819144212264.png" alt="image-20240819144212264" style="zoom:50%;" />
+<img src="./images/image-20240819144212264.png" alt="image-20240819144212264" style="zoom: 33%;" />
 
 两个节点之间未必存在路径，如 v1 到 v5 不存在路径。
 
-### Path in directed unweighted graph
+## 2. 有向无权图的路径
 
-<img src="./images/image-20240819144321807.png" alt="image-20240819144321807" style="zoom:50%;" />
+<img src="./images/image-20240819144321807.png" alt="image-20240819144321807" style="zoom: 33%;" />
 
 有向图的路径只有一个方向。
 
 从 v3 可以到 v5，但是从 v5 无法返回 v3。
 
-<img src="./images/image-20240819144423139.png" alt="image-20240819144423139" style="zoom:50%;" />
+<img src="./images/image-20240819144423139.png" alt="image-20240819144423139" style="zoom: 33%;" />
 
 有向无权图的路径长度：路径包含**边**的个数。
 
-## Path in Weighted Graphs
+## 3. 有权图的路径
 
 有权图对路径长度的定义有所不同：
 
-<img src="./images/image-20240819144617624.png" alt="image-20240819144617624" style="zoom:50%;" />
+<img src="./images/image-20240819144617624.png" alt="image-20240819144617624" style="zoom: 33%;" />
 
-<img src="./images/image-20240819144659825.png" alt="image-20240819144659825" style="zoom:50%;" />
+<img src="./images/image-20240819144659825.png" alt="image-20240819144659825" style="zoom: 33%;" />
 
 有向图的路径更容易不存在。
 
-## 最短路径问题
+## 4. 最短路径问题
 
-<img src="./images/image-20240819144843856.png" alt="image-20240819144843856" style="zoom:50%;" />
+<img src="./images/image-20240819144843856.png" alt="image-20240819144843856" style="zoom: 33%;" />
 
 最短路径问题：在 graph 中找到从起点到终点的最短路径。
 
-单源最短路径问题（single-source）
+**单源最短路径问题**（single-source）
 
-<img src="./images/image-20240819145015329.png" alt="image-20240819145015329" style="zoom:50%;" />
+<img src="./images/image-20240819145015329.png" alt="image-20240819145015329" style="zoom: 33%;" />
 
 上图：找到从 v3 出发到所有其它节点的最短路径。
 
 单源最短路径的目标是获得下表：
 
-<img src="./images/image-20240819145145174.png" alt="image-20240819145145174" style="zoom:50%;" />
+<img src="./images/image-20240819145145174.png" alt="image-20240819145145174" style="zoom: 33%;" />
 
 表中包含从 v3 出发到其它节点的最短路径：
 
@@ -83,6 +83,3 @@
 - 表示 v2 的前一个节点是 v1；
 - 查看如何从起点到 v1，查看第一行，path 为 v3，表示 v1 的前一个节点是 v3；
 - 这样就获得从 v3 到 v3 的最短路径为 v3->v1->v2。
-
-
-

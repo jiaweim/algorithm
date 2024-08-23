@@ -1,16 +1,16 @@
 # 无权图的最短路径问题
 
 - [无权图的最短路径问题](#无权图的最短路径问题)
-  - [简介](#简介)
-  - [算法](#算法)
+  - [1. 简介](#1-简介)
+  - [2. 算法](#2-算法)
   - [总结](#总结)
 
 2024-08-19
 ***
 
-## 简介
+## 1. 简介
 
-无权图特点：
+无权图的特点：
 
 - 所有 edge 的权重为 1；
 - 不存在的 edge 的权重为 ∞；
@@ -18,13 +18,15 @@
 
 单源最短路径问题，输入是一个 graph 和一个起点：
 
- <img src="./images/image-20240819150213654.png" alt="image-20240819150213654" style="zoom:50%;" />
+ <img src="./images/image-20240819150213654.png" alt="image-20240819150213654" style="zoom: 33%;" />
 
 目标是得到右侧的表格。
 
 这里以有向图为例，对应算法也适用于无向图（无向图就是双向图）。
 
-## 算法
+## 2. 算法
+
+基于广度优先的策略。
 
 该算法只适用于无权图，即所有 edge 的权重为 1.
 
@@ -33,7 +35,7 @@
 - queue
 - 矩阵，并初始化
 
-<img src="./images/image-20240819150432320.png" alt="image-20240819150432320" style="zoom:50%;" />
+<img src="./images/image-20240819150432320.png" alt="image-20240819150432320" style="zoom: 33%;" />
 
 循环前：
 
@@ -44,26 +46,27 @@
 
 如下图：
 
-<img src="./images/image-20240819150632294.png" alt="image-20240819150632294" style="zoom:50%;" />
+<img src="./images/image-20240819150632294.png" alt="image-20240819150632294" style="zoom: 33%;" />
 
 **第一次循环**：
 
 - 从 queue 取出一个 vertex，这里是 v3
-- 找到 v3 为起点的边，为 v1 和 v6，先处理 v1
+- 找到 v3 为起点的边，为 v1 和 v6
+- 先处理 v1
   - 其 visit 为 no（yes 则跳过）
     - 把 v1 插入 queue
     - v1 的 dist 记为 1
     - v1 的 path 为 v3
-    - 完成 v1 的处理
+    - enqueue(v1)
 
-<img src="./images/image-20240819151020129.png" alt="image-20240819151020129" style="zoom:50%;" />
+<img src="./images/image-20240819151020129.png" alt="image-20240819151020129" style="zoom: 33%;" />
 
-- 再来处理 v6
+- 再处理 v6
   - v6 的 visit 为 no，以相同方式更新第 6 行
     - visit[6] = true
     - dist[6] = dist[3] + 1 = 1
     - path[6] = v3
-  - 将 v6 插入 queue 末尾
+    - enqueue(v6)
 
 **第二次循环：**
 
@@ -71,7 +74,7 @@
 
 - v1 <- dequeue()
 - 找到 v1 的相邻节点：v2 和 v4
-- has v2 been visited?no，更新表格第二行
+- 是否访问过 v2? 否，更新表格第二行
   - enqueue(v2)
   - visit[2] = true
   - dist[2] = dist[1]+1=2
@@ -79,7 +82,7 @@
 
 <img src="./images/image-20240819151604868.png" alt="image-20240819151604868" style="zoom:33%;" />
 
-- has v4 been visited? no
+- 是否访问过 v4? 否
   - enqueue(v4)
   - visit[4] = true
   - dist[4] = dist[1]+1=2
@@ -88,16 +91,16 @@
 **第三次循环：**
 
 - v6 <- dequeue()
-- v6 has no adjacent vertex
-- ignore v6（v6 不会称为任何路径的中间节点）
+- v6 没有相邻节点
+- ignore v6（v6 不会成为任何路径的中间节点）
 
 **第四次循环：**
 
 - v2 <- dequeue()
 - 找到 v2 的相邻节点：v4 和 v5
-- has v4 been visited? yes，跳过 v4
+- 是否访问过 v4? 是，跳过 v4
   - 因为之前已经找到过 v4，如果再经过 v2 到 v4，等于多了个步骤，只会增加步骤，因此忽略
-- has v5 been visited? no
+- 是否访问过 v5? 否
   - enqueue(v5)
   - visit[5] = true
   - dist[5] = dist[2]+1=3

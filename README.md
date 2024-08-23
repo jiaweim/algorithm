@@ -14,3 +14,6 @@
 ## 参考资料
 
 - http://analgorithmaday.blogspot.com
+- https://www.hello-algo.com/chapter_hello_algo/
+- Algorithms, 4ed, Robert Sedgewick, Kevin Wayne 
+- 算法导论, 3ed
