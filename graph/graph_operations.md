@@ -6,7 +6,8 @@
   - [3. 基于邻接表的实现](#3-基于邻接表的实现)
   - [4. 效率对比](#4-效率对比)
 
-2024-08-20
+2024-08-20⭐
+@author Jiawei Mao
 ***
 
 ## 1. 简介
@@ -15,22 +16,22 @@
 
 ## 2. 基于临接矩阵的实现
 
-给定一个顶点数量为 n 的无向图，则各种操作的实现方式如图 9-7 所示。
+给定一个顶点数量为 n 的无向图，其各种操作的实现方式如图 9-7 所示。
 
-- **添加或删除边**：直接在邻接矩阵中修改指定的边即可，使用 $O(1)$ 时间。而由于是无向图，因此需要同时更新两个方向的边。
-- **添加顶点**：在邻接矩阵的尾部添加一行一列，并全部填 0 即可，使用 $O(n)$ 时间。
-- **删除顶点**：在邻接矩阵中删除一行一列。当删除首行首列时达到最差情况，需要将 $(n−1)^2$ 个元素“向左上移动”，从而使用 $O(n^2)$ 时间。
+- **添加或删除边**：直接在邻接矩阵中修改指定的边即可，$O(1)$ 时间。而由于是无向图，因此需要同时更新两个方向的边。
+- **添加顶点**：在邻接矩阵的尾部添加一行一列，并全部填 0 即可，$O(n)$ 时间。
+- **删除顶点**：在邻接矩阵中删除一行一列。删除首行首列时达到最差情况，需要将 $(n−1)^2$ 个元素“向左上移动”，从而使用 $O(n^2)$ 时间。
 - **初始化**：传入 n 个顶点，初始化长度为 n 的顶点列表 `vertices` ，使用 $O(n)$ 时间；初始化 n×n 大小的邻接矩阵 `adjMat` ，使用 $O(n^2)$ 时间。
 
-<img src="./images/adjacency_matrix_step1_initialization.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_matrix_step1_initialization.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/adjacency_matrix_step2_add_edge.png" alt="adjacency_matrix_add_edge" style="zoom:50%;" />
+<img src="./images/adjacency_matrix_step2_add_edge.png" alt="adjacency_matrix_add_edge" style="zoom: 33%;" />
 
-<img src="./images/adjacency_matrix_step3_remove_edge.png" alt="adjacency_matrix_remove_edge" style="zoom:50%;" />
+<img src="./images/adjacency_matrix_step3_remove_edge.png" alt="adjacency_matrix_remove_edge" style="zoom: 33%;" />
 
-<img src="./images/adjacency_matrix_step4_add_vertex.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_matrix_step4_add_vertex.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/adjacency_matrix_step5_remove_vertex.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_matrix_step5_remove_vertex.png" alt="img" style="zoom: 33%;" />
 
 >  图 9-7  邻接矩阵的初始化、增删边、增删顶点
 
@@ -134,15 +135,15 @@ class GraphAdjMat {
 - **删除顶点**：需遍历整个邻接表，删除包含指定顶点的所有边，使用 $O(n+m)$ 时间。
 - **初始化**：在邻接表中创建 n 个顶点和 2m 条边，使用 $O(n+m)$ 时间。
 
-<img src="./images/adjacency_list_step1_initialization.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_list_step1_initialization.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/adjacency_list_step2_add_edge.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_list_step2_add_edge.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/adjacency_list_step3_remove_edge.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_list_step3_remove_edge.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/adjacency_list_step4_add_vertex.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_list_step4_add_vertex.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/adjacency_list_step5_remove_vertex.png" alt="img" style="zoom:50%;" />
+<img src="./images/adjacency_list_step5_remove_vertex.png" alt="img" style="zoom: 33%;" />
 
 >  图 9-8  邻接表的初始化、增删边、增删顶点
 

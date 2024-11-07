@@ -9,8 +9,6 @@
 - [最小生成树](./minimum_spanning_trees.md)
 - [拓扑排序](./topological_sorting.md)
 
-
-
 ## 参考
 
 - https://github.com/wangshusen/AdvancedAlgorithms
