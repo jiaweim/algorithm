@@ -4,7 +4,9 @@
   - [简介](#简介)
   - [无向无权图的路径](#无向无权图的路径)
   - [有向无权图的路径](#有向无权图的路径)
-  - [3. 有权图的路径](#3-有权图的路径)
+  - [加权图的路径（Dijkstra）](#加权图的路径dijkstra)
+  - [包含 negative-cost edge](#包含-negative-cost-edge)
+  - [无环 graph](#无环-graph)
 
 2024-08-19
 
@@ -82,6 +84,15 @@
 
 ## 有向无权图的路径
 
+有向无权图的特点：
+
+- 所有 edge 的权重为 1
+- 不存在的 edge 权重为 ∞
+
+单源最短路径问题：输入为 graph 和起点。
+
+解决方案：BFS。
+
 <img src="./images/image-20240819144321807.png" alt="image-20240819144321807" style="zoom: 25%;" />
 
 有向图的路径只有一个方向。从 v3 可以到 v5，但是从 v5 无法返回 v3。
@@ -106,7 +117,7 @@ v3 设为起点 s，从 s 到 v3 的最短路径长度为 0。然后查找所有
 
 <img src="./images/image-20241124172830734.png" alt="image-20241124172830734" style="zoom:50%;" />
 
-这种搜索图的策略称为**广度优先搜索**（breadth-first search, BFS）。它分层处理定点：最接近起点的顶点先处理，最远的顶点最后处理。这与树的分层遍历非常相似。
+这种搜索图的策略称为**广度优先搜索**（breadth-first search, BFS）。它分层处理顶点：最接近起点的顶点先处理，最远的顶点最后处理。这与树的分层遍历非常相似。
 
 广度优先搜索的代码实现，首先初始化配置：
 
@@ -120,9 +131,122 @@ v3 设为起点 s，从 s 到 v3 的最短路径长度为 0。然后查找所有
 | v6   | F     | ∞    | 0    |
 | v7   | F     | ∞    | 0    |
 
+对每个顶点，跟踪上面三条信息。$d_v$ 是顶点距离 s 的距离，$p_v$ 记录上一个顶点，处理完的顶点 known 标记为 true。当一个顶点标记为 known，可以保证不会找到更便宜的路径，因此对该顶点的处理基本结束。
 
+基本算法如下：
 
-## 3. 有权图的路径
+```java
+void unweighted( Vertex s ){
+    for each Vertex v{
+        v.dist = INFINITY;
+        v.known = false;
+    }
+    s.dist = 0;
+    
+    for( int currDist = 0; currDist < NUM_VERTICES; currDist++ )
+        for each Vertex v
+            if( !v.known && v.dist == currDist){
+                v.known = true;
+                for each Vertex w adjacent to v
+                if( w.dist == INFINITY){
+                    w.dist = currDist + 1;
+                    w.path = v;
+        		} 
+    		} 
+}
+```
+
+该算法分别将距离 $d=0$, $d=1$, $d=2$ 的顶点标记为 known，并将所有相邻且 $d_w=\infty$ 的节点 $w$ 的距离记为 $d_w=d+1$。通过追溯 $p_v$ 可以得到实际路径。
+
+由于嵌套 for 循环，该算法的运行时间为 $O(|V|^2)$。即使所有顶点已知，外部 for 循环还会持续到 `NUM_VERTICES`。虽然可以进行额外测试来避免该情况，但不影响最坏运行时间。可以采用与拓扑排序类似的方法消除该低效率。
+
+采用队列保存 `currDist` 和 `currDist+1` 节点。如下所示：
+
+```java
+void unweighted(Vertex s){
+    Queue<Vertex> q = new Queue<Vertex>( );
+    for each Vertex v
+    	v.dist = INFINITY;
+    
+    s.dist = 0;
+    q.enqueue(s);
+    
+    while(!q.isEmpty()){
+        Vertex v = q.dequeue( );
+        for each Vertex w adjacent to v
+            if(w.dist == INFINITY){
+                w.dist = v.dist + 1;
+                w.path = v;
+                q.enqueue(w);
+        	} 
+    }
+}
+```
+
+这里起点为参数 `s`。此外，如果有些顶点无法从起点 `s` 到达，队列会过早清空，此时将报告这些节点的距离为无穷大，也合理。最后，不需要使用 `known` 字段，处理过的节点从队列移除，也不会再进入队列。下图是该算法的图表示意：
+
+<img src="./images/image-20241125112137103.png" alt="image-20241125112137103" style="zoom:50%;" />
+
+使用邻接表表示，该算法的时间复杂度为 $O(|E|+|V|)$。
+
+JGraphT 实现：
+
+```java
+SimpleDirectedGraph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
+String v1 = "v1";
+String v2 = "v2";
+String v3 = "v3";
+String v4 = "v4";
+String v5 = "v5";
+String v6 = "v6";
+String v7 = "v7";
+graph.addVertex(v1);
+graph.addVertex(v2);
+graph.addVertex(v3);
+graph.addVertex(v4);
+graph.addVertex(v5);
+graph.addVertex(v6);
+graph.addVertex(v7);
+
+graph.addEdge(v1, v2);
+graph.addEdge(v1, v4);
+graph.addEdge(v2, v4);
+graph.addEdge(v2, v5);
+graph.addEdge(v3, v1);
+graph.addEdge(v3, v6);
+graph.addEdge(v4, v3);
+graph.addEdge(v4, v5);
+graph.addEdge(v4, v6);
+graph.addEdge(v4, v7);
+graph.addEdge(v5, v7);
+graph.addEdge(v7, v6);
+
+List<String> values = new ArrayList<>();
+BreadthFirstIterator<String, DefaultEdge> it = new BreadthFirstIterator<>(graph, v3);
+while (it.hasNext()) {
+    String node = it.next();
+    values.add(node);
+}
+assertIterableEquals(Arrays.asList(v3, v1, v6, v2, v4, v5, v7), values);
+assertEquals(0, it.getDepth(v3));
+assertEquals(1, it.getDepth(v1));
+assertEquals(1, it.getDepth(v6));
+assertEquals(2, it.getDepth(v2));
+assertEquals(2, it.getDepth(v4));
+assertEquals(3, it.getDepth(v5));
+assertEquals(3, it.getDepth(v7));
+
+assertEquals(v3, it.getParent(v1));
+assertEquals(v3, it.getParent(v6));
+assertEquals(v1, it.getParent(v2));
+assertEquals(v1, it.getParent(v4));
+assertEquals(v2, it.getParent(v5));
+assertEquals(v4, it.getParent(v7));
+```
+
+## 加权图的路径（Dijkstra）
+
+Dijkstra 算法解决加权有向图的单源最短路径问题，该算法要求所有边的权重为非负数。
 
 有权图对路径长度的定义有所不同：
 
@@ -130,4 +254,184 @@ v3 设为起点 s，从 s 到 v3 的最短路径长度为 0。然后查找所有
 
 <img src="./images/image-20240819144659825.png" alt="image-20240819144659825" style="zoom: 25%;" />
 
-有向图的路径更容易不存在。
+加权图的最短路径问题更复杂，不过思路与 BFS 类似。记录每个顶点的距离 $d_v$ 和上一个顶点 $p_v$。
+
+解决单源最短路径问题的经典方法称为 **Dijkstra 算法**。这个已有三十年历史的解决方案是**贪婪算法**的一个典型例子。贪婪算法分步解决问题，每一步采用这个阶段看起来最好的做法。贪婪算法的主要问题它不是总有效。
+
+Dijkstra 算法分步进行，和 BFS 算法一样，每一步 Dijkstra 都会选择一个顶点 `v`，该顶点在所有未知顶点中具有最小 $d_v$，并声明从 s 到 v 的路径已知，然后更新 $d_w$。对无权图，如果 $d_w=\infty$，则设置 $d_w=d_v+1$，对加权图，$d_w=d_v+c_{v,w}$。
+
+下面是一个加权图：
+
+<img src="./images/image-20241125134730098.png" alt="image-20241125134730098" style="zoom:50%;" />
+
+Dijkstra 算法的初始设置：
+
+<img src="./images/image-20241125134808663.png" alt="image-20241125134808663" style="zoom:50%;" />
+
+初始节点 s 设为 v1，因此 v1 长度为 0，并标记为 known。然后更新 v1 的相邻节点，即 v2 和 v4：
+
+<img src="./images/image-20241125135040482.png" alt="image-20241125135040482" style="zoom:50%;" />
+
+然后，选择 v4 并标记为 known，其相邻节点包括 v3, v5, v6, v7，调整它们的路径长度：
+
+<img src="./images/image-20241125135228251.png" alt="image-20241125135228251" style="zoom:50%;" />
+
+然后选择 v2。其相邻节点 v4, v5，其中 v4 已为 known，跳过。对 v5，经过 v2 的 cost 为 2+10=12，v5 已有一个更短路径长度为 3，无需更新，如下：
+
+<img src="./images/image-20241125135626095.png" alt="image-20241125135626095" style="zoom:50%;" />
+
+接下来选择 v5，其 cost 为 3，有一个相邻节点 v7，因为 3+6>5，所以不需要更新。然后选择 v3，其相邻节点 v6 更新为 3+5=8。然后选择 v7，v6 更新为 5+1=6，最后选择 v6，没有相邻节点，结束。最后表格如下：
+
+<img src="./images/image-20241125135930589.png" alt="image-20241125135930589" style="zoom:50%;" />
+
+这个过程就是 **Dijkstra 算法**。
+
+Dijkstra 算法的伪代码实现：
+
+```ja
+class Vertex{
+    public List adj; // Adjacency list
+    public boolean known;
+    public DistType dist; // DistType is probably int
+    public Vertex path;
+    // Other fields and methods as needed
+}
+```
+
+```java
+/** 
+*Print shortest path to v after dijkstra has run.
+* Assume that the path exists.
+*/
+void printPath( Vertex v ){
+    if( v.path != null){
+        printPath(v.path);
+        System.out.print(" to ");
+    }
+    System.out.print( v );
+}
+```
+
+```java
+void dijkstra(Vertex s){
+    for each Vertex v{
+        v.dist = INFINITY;
+        v.known = false;
+    }
+    s.dist = 0;
+    while(there is an unknown distance vertex){
+        Vertex v = smallest unknown distance vertex;
+        v.known = true;
+        
+        for each Vertex w adjacent to v
+            if(!w.known ){
+                DistType cvw = cost of edge from v to w;
+                if( v.dist + cvw < w.dist ){
+                    // Update w
+                    decrease( w.dist to v.dist + cvw );
+                    w.path = v;
+                } 
+            } 
+    } 
+}
+```
+
+其实就是采用贪婪规则填充表格的 for 循环。
+
+只要没有 negative-cost 的边，该算法就有效。如果包含 negative-cost 边，可能得到错误结果。运行时间取决于节点的操作方式，如果按顺序扫描顶点找最小 $d_v$，每次需要 $O(|V|)$ 时间找到最小值，因此整个算法过程将花费 $O(|V|^2)$  时间来找最小值。更新 $d_w$ 的时间为常数，每条边最多更新一次，总共 $O(|E|)$。因此，总的运行时间为 $O(|E|+|V|^2)=O(|V|^2)$。
+
+对稠密图，$|E|=O(|V|^2)$，该算法不仅简单，而是是最优的，因此其运行时间与边数成正比。
+
+对稀疏图，$|E|=|V|$，则此算法太慢。此时，应该将距离保存在优先队列中。实现方式有两种类似的方式，顶点 v 的选择是一个 `deleteMin` 操作，更新 w 距离的方式有两种：
+
+1. 将更新视为 `decreaseKey` 操作。查找最小值和更新的时间都是 $O(\log|V|)$，对应运行时间为 $O(|E|\log|V|+|V|\log|V|)=O(|E|\log|V|)$，有所改进。由于优先队列不支持有效地查找操作，因此每当优先队列中的 $d_i$ 发生变化，都需要维护和更新优先队列中每个 $d_i$ 值的位置。如果使用二叉堆实现优先队列，则性能很差，如果使用 pairing-heap，则效果还可以。
+2. 另一种方法是每当 w 的距离发生变化，将 w 和新的 $d_w$ 插入优先队列。因此一个顶点可能在优先队列中出现多次。当 `deleteMin` 从队列中删除最小顶点时，必须检查它以确保它是否已知，如果是，则忽略并执行下一个 `deleteMin`。虽然这种方法从软件角度看更优越，并且更容易编码，但优先级队列的大小可能会变得与 $|E|$ 一样大。这不会影响渐近时间界，因为 $|E|\le |V|^2$，说明 $\log |E|\le 2\log|V|$，时间复杂度依然为 $O(|E|\log |V|)$。但是，内存需求增加了，对部分应用可能影响很大。另外，该方法需要 $|E|$ 此 `delteMin` 操作而不是 $|V|$ 次，因此实践中可能更慢。
+
+在典型应用中，大多数情况都是稀疏图，因此使用优先队列来实现很重要。
+
+JGraphT 实现：
+
+```java
+SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> graph =
+        new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+String v1 = "v1";
+String v2 = "v2";
+String v3 = "v3";
+String v4 = "v4";
+String v5 = "v5";
+String v6 = "v6";
+String v7 = "v7";
+graph.addVertex(v1);
+graph.addVertex(v2);
+graph.addVertex(v3);
+graph.addVertex(v4);
+graph.addVertex(v5);
+graph.addVertex(v6);
+graph.addVertex(v7);
+
+graph.setEdgeWeight(graph.addEdge(v1, v2), 2);
+graph.setEdgeWeight(graph.addEdge(v1, v4), 1);
+graph.setEdgeWeight(graph.addEdge(v2, v4), 3);
+graph.setEdgeWeight(graph.addEdge(v2, v5), 10);
+graph.setEdgeWeight(graph.addEdge(v3, v1), 4);
+graph.setEdgeWeight(graph.addEdge(v3, v6), 5);
+graph.setEdgeWeight(graph.addEdge(v4, v3), 2);
+graph.setEdgeWeight(graph.addEdge(v4, v5), 2);
+graph.setEdgeWeight(graph.addEdge(v4, v6), 8);
+graph.setEdgeWeight(graph.addEdge(v4, v7), 4);
+graph.setEdgeWeight(graph.addEdge(v5, v7), 6);
+graph.setEdgeWeight(graph.addEdge(v7, v6), 1);
+
+DijkstraShortestPath<String, DefaultWeightedEdge> path = new DijkstraShortestPath<>(graph);
+ShortestPathAlgorithm.SingleSourcePaths<String, DefaultWeightedEdge> paths = path.getPaths(v1);
+assertEquals(0, paths.getWeight(v1));
+assertEquals(2, paths.getWeight(v2));
+assertEquals(3, paths.getWeight(v3));
+assertEquals(1, paths.getWeight(v4));
+assertEquals(3, paths.getWeight(v5));
+assertEquals(6, paths.getWeight(v6));
+assertEquals(5, paths.getWeight(v7));
+```
+
+## 包含 negative-cost edge
+
+如果 graph 包含 negative-cost edge，则 Dijkstra 算法不起作用。
+
+一个直观的解决方案是给每条边的 cost 增加一个常数，从而删除 negative-cost 边，然后在新 graph 上计算最短路径，然后将该结果应用于原始 graph。这种简单的策略行不通，因为这会导致边多的路径比边少的路径增加的权重更多。
+
+组合加权和非加权算法可以解决该问题，但会增加运行时间。
+
+首先将 $s$ 放入队列，然后在每一步， dequeue 节点 v，查找所有与 v 相邻的节点 w，如果 $d_w>d_v+c_{v,w}$，更新 $d_w$ 和 $p_w$，如果未处理过 w，将其放入 queue。重复该过程，直到 queue 为空。伪代码实现：
+
+```java
+void weightedNegative(Vertex s){
+    Queue<Vertex> q = new Queue<Vertex>();
+    for each Vertex v
+	    v.dist = INFINITY;
+    s.dist = 0;
+    q.enqueue(s);
+    
+    while(!q.isEmpty( )){
+        Vertex v = q.dequeue();
+        for each Vertex w adjacent to v
+            if( v.dist + cvw < w.dist){
+                // Update w
+                w.dist = v.dist + cvw;
+                w.path = v;
+                if( w is not already in q)
+                	q.enqueue( w );
+            } 
+    }
+}
+```
+
+如果没有 negative-cost 循环，该算法能工作，但内部 for 循环不再是每条边执行一次。每个顶点最多出队 $|V|$ 次，因此如果使用邻接表，运行时间为 $O(|E|\cdot|V|)$，这比 Dijkstra 算法慢许多。幸运的是，在实践中基本没有 negative-cost edge。
+
+如果存在 negative-cost-cycle，该算法会无限循环。通过在任何顶点出队 $|V|+1$ 次后停止算法，可以确保终止。
+
+## 无环 graph
+
+如果已知 graph 无环，那可以通过改变声明顶点为 known 的顺序改进 Dijkstra 算法。即按照拓扑排序选择节点。该算法可以迭代一次完成，因为在拓扑排序时可以同时选择和更新节点。
+
+
+
