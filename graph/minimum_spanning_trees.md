@@ -12,11 +12,11 @@
 
 ## 1. 简介
 
-<img src="./images/image-20240819170529833.png" alt="image-20240819170529833" style="zoom:33%;" />
+<img src="./images/image-20240819170529833.png" alt="image-20240819170529833" style="zoom: 25%;" />
 
-这是一棵树，也是一个无向图。树是一类特殊的无向图，但无向图未必是树。例如：
+这是一棵树，也是一个**无向图**。树是一类特殊的无向图，但无向图未必是树。例如：
 
-<img src="./images/image-20240819171856277.png" alt="image-20240819171856277" style="zoom:33%;" />
+<img src="./images/image-20240819171856277.png" alt="image-20240819171856277" style="zoom: 25%;" />
 
 这是一个无向图，但不是树，因为**树不允许有回路**。
 
@@ -26,13 +26,13 @@
 
 tree 必须是**连通图**，即任意两个节点之间都有路径。例如：
 
-<img src="./images/image-20240819172150571.png" alt="image-20240819172150571" style="zoom:33%;" />
+<img src="./images/image-20240819172150571.png" alt="image-20240819172150571" style="zoom: 25%;" />
 
 这个 graph 可以分为两部分，两部分不连通，所以不是 tree。
 
 > [!TIP]
 >
-> tree 的定义：**连通**（connected）**无环**（acyclic）**无向**（undirected） graph。
+> tree 的定义：**连通**（connected）**无环**（acyclic）**无向**（undirected）的 graph。
 
 tree 是一类特殊的图，其 vertices 和 edges 有**特殊关系**：如果 tree 有 n 个 vertices，那么必然有 $n-1$ 个 edges。
 
@@ -46,21 +46,22 @@ tree 是一类特殊的图，其 vertices 和 edges 有**特殊关系**：如果
   - 包含所有 n 个 vertices
   - 保留 $n-1$ 个 edges
   - 该 subgraph 为 connected
+  - 没有环
 - 得到的 subgraph 就是生成树。
 
 例如：
 
-<img src="./images/image-20240819173402096.png" alt="image-20240819173402096" style="zoom:33%;" />
+<img src="./images/image-20240819173402096.png" alt="image-20240819173402096" style="zoom: 25%;" />
 
 - graph 包含 7 个节点和 12 条边
 - 需要保留 7 个节点，从 12 条边选出 6 条边保留
-- 得到一个 connected-undirected-graph 就是 spanning-tree
+- 得到一个 connected-undirected-graph 就是生成树。
 
-从同一个 graph 可以得到多个 spanning-tree。而**最小生成树**（minimum-spanning-tree, MST）指权重加和最小的那个生成树。
+从同一个 graph 可以得到多棵生成树。而**最小生成树**（minimum-spanning-tree, MST）指权重加和最小的那棵。
 
 > [!NOTE]
 >
-> 并非所有 graph 都有 spanning-tree，只有 connected-graph 才有 spanning-tree。
+> 并非所有 graph 都有生成树，只有 connected-graph 才有生成树。
 
 MST 的应用：
 
@@ -73,9 +74,11 @@ MST 的应用：
 
 铺路要保证连通性。选择最小生成树，能够让道路的总长度最短。
 
+或者跟房屋布线，也是一个最小生成树问题。
+
 **总结：**
 
-- tree 是 undirected graph，但 undirected graph 未必是 tree
+- tree 是无向图，但无向图未必是 tree
 - tree 的任意两个 vertices 只有一条 path
 - tree 没有 cycles
 - 如果 tree 有 n 个 vertices，那么它必然有 $n-1$ 个 edges
@@ -88,7 +91,7 @@ MST 的应用：
 - 保留 $n-1$ 个 edges
 - subgraph 必须 **connected** and **acyclic**
 
-输出：得到的 subgraph 称为 spanning-tree。
+输出：得到的子图称为生成树。
 
 最小生成树（minimum spanning tree）：权重加和最小的 spanning-tree。
 
@@ -180,6 +183,10 @@ Prism 算法能找到无向图中的最小生成树。
 Prim 算法总结：
 
 <img src="./images/image-20240819190924524.png" alt="image-20240819190924524" style="zoom:33%;" />
+
+Prim 算法和 Dijkstra 算法的思路基本一样，甚至更简单一点。
+
+不采用 heaps，时间复杂度为 $O(|V|^2)$，适合 dense-graph；采用 binary-heap，时间复杂度为 $O(|E|\log|V|)$，适合 sparse-graph。
 
 ## 4. Kruskal 算法
 
@@ -308,6 +315,3 @@ Kruskal 总的时间复杂度：$O(m\cdot \log m)$，$m$ 为边数
   - 判断两个 vertices 是否属于同一个 tree $O(1)$
   - 合并两个 trees: $O(1)$
 - 总的时间复杂度为：$O(m\cdot\log m)+m\cdot O(1)=O(m\cdot\log m)$
-
-
-

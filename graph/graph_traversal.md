@@ -113,6 +113,11 @@ List<Vertex> graphBFS(GraphAdjList graph, Vertex startVet) {
 
 **深度优先遍历是一种优先走到底、无路可走再回头的遍历方式**。如图 9-11 所示，从左上角顶点出发，访问当前顶点的某个邻接顶点，直到走到尽头时返回，再继续走到尽头并返回，以此类推，直至所有顶点遍历完成。
 
+特点：
+
+- 顺序不唯一
+- 连通图的深度优先遍历类似树的先根遍历
+
 <img src="./images/graph_dfs.png" alt="img" style="zoom:50%;" />
 
 > 图 9-11  图的深度优先遍历
@@ -154,23 +159,23 @@ List<Vertex> graphDFS(GraphAdjList graph, Vertex startVet) {
 
 为了加深理解，建议将图 9-12 与代码结合起来，在脑中模拟（或者用笔画下来）整个 DFS 过程，包括每个递归方法何时开启、何时返回。
 
-<img src="./images/graph_dfs_step1.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step1.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step2.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step2.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step3.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step3.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step4.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step4.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step5.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step5.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step6.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step6.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step7.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step7.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step8.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step8.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step9.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step9.png" alt="img" style="zoom: 33%;" />
 
 <img src="./images/graph_dfs_step10.png" alt="img" style="zoom:50%;" />
 
