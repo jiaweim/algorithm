@@ -177,9 +177,9 @@ List<Vertex> graphDFS(GraphAdjList graph, Vertex startVet) {
 
 <img src="./images/graph_dfs_step9.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step10.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step10.png" alt="img" style="zoom: 33%;" />
 
-<img src="./images/graph_dfs_step11.png" alt="img" style="zoom:50%;" />
+<img src="./images/graph_dfs_step11.png" alt="img" style="zoom: 33%;" />
 
 > 图 9-12  图的深度优先遍历步骤
 
