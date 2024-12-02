@@ -100,16 +100,16 @@ JHeaps 实现了大量堆数据结构，代表了技术所有的设计技术。�
 | `MinMaxBinaryArrayDoubleEndedHeap` (*minmax-implicit-2*)    | array                  | ✗           | ✗        | ✓           | ✗        |
 | `DaryArrayHeap` (*implicit-simple-d*)                       | array                  | ✗           | ✗        | ✗           | ✗        |
 | `DaryArrayAddressableHeap` (*implicit-d*)                   | array                  | ✓           | ✗        | ✗           | ✗        |
-| `FibonacciHeap` (*fibonacci*)                               | tree                   | ✓           | ✓        | ✗           | ✗        |
+| `FibonacciHeap` (fibonacci)                                 | tree                   | ✓           | ✓        | ✗           | ✗        |
 | `SimpleFibonacciHeap` (*simple-fibonacci*)                  | tree                   | ✓           | ✓        | ✗           | ✗        |
-| `PairingHeap` (*pairing*)                                   | tree                   | ✓           | ✓        | ✗           | ✗        |
+| `PairingHeap` (pairing)                                     | tree                   | ✓           | ✓        | ✗           | ✗        |
 | `RankPairingHeap` (*rank-pairing-t1*)                       | tree                   | ✓           | ✓        | ✗           | ✗        |
 | `CostlessMeldPairingHeap` (*cm-pairing*)                    | tree                   | ✓           | ✓        | ✗           | ✗        |
 | `BinaryTreeAddressableHeap` (*explicit-2*)                  | tree                   | ✓           | ✗        | ✗           | ✗        |
 | `DaryTreeAddressableHeap` (*explicit-d*)                    | tree                   | ✓           | ✗        | ✗           | ✗        |
 | `LeftistHeap` (*leftist*)                                   | tree                   | ✓           | ✓        | ✗           | ✗        |
 | `SkewHeap` (*skew*)                                         | tree                   | ✓           | ✓        | ✗           | ✗        |
-| `BinaryTreeSoftHeap` (*explicit-soft-simple-2*)             | tree                   | ✗           | ✓        | ✗           | ✗        |
+| `BinaryTreeSoftHeap` (explicit-soft-simple-2)               | tree                   | ✗           | ✓        | ✗           | ✗        |
 | `BinaryTreeSoftAddressableHeap` (*explicit-soft-2*)         | tree                   | ✓           | ✓        | ✗           | ✗        |
 | `ReflectedPairingHeap` (*reflected-pairing*)                | tree                   | ✓           | ✓        | ✓           | ✗        |
 | `ReflectedFibonacciHeap` (*reflected-fibonacci*)            | tree                   | ✓           | ✓        | ✓           | ✗        |
@@ -170,4 +170,34 @@ JHeaps 试图在不牺牲性能的前提下尽可能减少内存消耗。对基�
 
 n 次随机 `insert` 操作，然后执行 `cn` 次：一个随机 `insert` + 一个 `deleteMin`。Fig.2b 为 `c=1` 时的结果。
 
-该工作负载
+该工作负载是最常见的应用情形之一。此工作负载又称为退化（degenerate），因为堆内产生的 key 分布非均匀。和上一个试验一样，不可寻址的 implicit d-ary heaps 性能最好（d=4）。pairing-heap 是所有基于指针的堆中最快的，但比 implicit-simple-4 慢了 4 倍。fibonacci heap 也很不错，值对 pairing-heap 差一点。另外，最新的 hollow-heap 性能与 pairing-heap 接近。
+
+### Randomized ins-dcr-dmn
+
+为了避免 randomized ins-dmn 工作负载引入的 key bias，再次使用 n 个随机 `insert` 初始化 heap，然后重复 cn 次以下操作：一次随机 `insert`，k 次随机 `decreaseKey` 和 1 次 `deleteMin`。`decreaseKey` 有两种变体：
+
+1. middle，即 key 减少为当前值和最小值之间的某个随机数
+2. min，key 成为新的最小值
+
+<img src="./images/image-20241202103355299.png" alt="image-20241202103355299" style="zoom:50%;" />
+
+Fig.3a 和 Fig.3b 分别包含 `c=k=1` 时 middle 和 min 的结果：
+
+- 在 middle 中，implicit d-ary heaps 性能最好，其次是 explicit-4 和 pairing-heap，性能大约相差 1.6 倍。hollow-heap 在这个负载表现不佳。
+- 在 min 中，因为 `decreaseKey` 元素会被后续 `deleteMin` 操作删除。此时，pairing-heap 及其 costless-meld 操作显然性能最好。hollow-heap 依然无法与 pairing-heap 相比。
+
+implicit d-ary heaps 在 ins-dcr-dmn 三个操作需要执行两次 bottom-up 和一次 top-down 调整，而 pairing-heap 的 insert 操作只需要连接 root，而 `decreaseKey` 操作相对 cheap。此外，pairing-heap 的 `deleteMin` 操作的性能取决于随机选择的节点的子节点刷领，该节点在 `decreaseKey` 操作后将成为新的 root。JHeaps 的 pairing-heap 实现通过从 root 切断所有子节点，并使用两次传递将它们组合起来执行 `deleteMin`。
+
+当将 k 增加到 1024 时，情况有所不同，此时在 `deleteMin` 之前会执行大量 `decreaseKey` 操作。Fig.3c 显示了 middle 的情况，此时  implicit d-ary 和 pairing 的性能几乎相同。此外，此时所有 heaps 的情况都趋于一致，hollow-heap 例外，它在这种负载中性能最差。
+
+ Fig.3d 显示了k=1024时 min 的情况：先执行 1024 次随机 `decreaseKey` 操作，每次被操作的元素变为最小值，然后执行一次 `deleteMin` 操作。在该负载中，implicit-heaps 最快，但是快的不多。对该工作负载，除了 hollow-heap 表现不佳，其它 heap 性能接近。
+
+### Dijkstra
+
+最后一个工作负载是基于 Dijkstra 算法的单源最短路径问题。Fig.4a 显示加利福尼亚州和内华达州道路地图的真实 graph 结果。众所周知，implicit d-ary 在这种工作负载中表现很好。好消息是 pairing-heap 和 implicit d-ary heap 的性能接近。另外，我们观察到基于指针的 heap 和 implicit d-ary heaps 的细微差异，这可能与 SubstrateVM 的开销有关。最后，hollow heaps 优于 fibonacci-heap，但不如 pairing-heap。在这个特殊用力中，explicit-8 和 explicit-16 d-ary 的性能受影响，可能用于指令数量太大。
+
+<img src="./images/image-20241202104956969.png" alt="image-20241202104956969" style="zoom:50%;" />
+
+## 总结
+
+JHeaps 经过充分测试，并已在 JGraphT 中投入生产。它包含大量堆数据结构是爱你。
