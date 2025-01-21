@@ -60,7 +60,7 @@ graph 大致可以分为：
 - 在无向图中，边表示两顶点之间的“双向”连接关系，如微信或 QQ 中的“好友关系”。
 - 在有向图中，边具有方向性，即 A→B 和 A←B 两个方向的边是相互独立的，例如微博或抖音上的“关注”与“被关注”关系。有向图又称为 digraph。
 
-![img](./images/directed_graph.png)
+<img src="./images/directed_graph.png" alt="img" style="zoom:50%;" />
 
 > 图 9-2  有向图与无向图
 
@@ -71,7 +71,7 @@ graph 大致可以分为：
 - 连通图，无向图中从每个顶点到其它顶点都有一条路径；具有该属性的**有向图**称为**强连通**（strongly connected）；对非强连接有向图，对应的无向图是连通的，就称为**弱连通**（weakly connected）
 - 非连通图，从某个顶点出发，至少有一个顶点无法到达
 
-![img](./images/connected_graph.png)
+<img src="./images/connected_graph.png" alt="img" style="zoom:50%;" />
 
 > 图 9-3  连通图与非连通图
 
@@ -85,7 +85,7 @@ graph 大致可以分为：
 
 为边添加“权重” 得到如图 9-4 所示的**有权图**（weighted graph）。例如在《王者荣耀》等手游中，系统会根据共同游戏时间来计算玩家之间的“亲密度”，这种亲密度网络就可以用有权图来表示。
 
-![img](./images/weighted_graph.png)
+<img src="./images/weighted_graph.png" alt="img" style="zoom:50%;" />
 
 > 图 9-4  有权图与无权图
 
@@ -136,7 +136,7 @@ graph 大致可以分为：
 
 如图 9-5 所示，设邻接矩阵为 M、顶点列表为 V ，那么矩阵元素 $M[i,j]=1$ 表示顶点 $V[i]$ 到顶点 $V[j]$ 之间存在边，反之 $M[i,j]=0$ 表示两顶点之间没有边。
 
-![img](./images/adjacency_matrix.png)
+<img src="./images/adjacency_matrix.png" alt="img" style="zoom:50%;" />
 
 > 图 9-5  图的邻接矩阵表示
 
@@ -156,7 +156,7 @@ graph 大致可以分为：
 
 **邻接表**（adjacency list）使用 $n$ 个链表来表示图，链表节点表示顶点。第 $i$ 个链表存储顶点 $i$ 的所有邻接顶点（与该顶点相连的顶点）。图 9-6 展示了一个使用邻接表存储的图的示例。
 
-![img](./images/adjacency_list.png)
+<img src="./images/adjacency_list.png" alt="img" style="zoom:50%;" />
 
 > 图 9-6  图的邻接表表示
 
@@ -190,9 +190,9 @@ java 中可以用任何类型的 `List` 维护邻接表，如 `ArrayList` 和 `L
 
 ### 无向无权图
 
-<img src="./images/image-20240819142120179.png" alt="image-20240819142120179" style="zoom: 50%;" />
+<img src="./images/image-20240819142120179.png" alt="image-20240819142120179" style="zoom: 33%;" />
 
-<img src="./images/image-20240819142251272.png" alt="image-20240819142251272" style="zoom:50%;" />
+<img src="./images/image-20240819142251272.png" alt="image-20240819142251272" style="zoom: 33%;" />
 
 ### 有向无权图
 
@@ -204,11 +204,11 @@ java 中可以用任何类型的 `List` 维护邻接表，如 `ArrayList` 和 `L
 
 **邻接表表示**
 
-<img src="./images/image-20240819142555915.png" alt="image-20240819142555915" style="zoom:50%;" />
+<img src="./images/image-20240819142555915.png" alt="image-20240819142555915" style="zoom: 33%;" />
 
 **临接矩阵表示**
 
-<img src="./images/image-20240819142707091.png" alt="image-20240819142707091" style="zoom:50%;" />
+<img src="./images/image-20240819142707091.png" alt="image-20240819142707091" style="zoom: 33%;" />
 
 
 
@@ -222,7 +222,7 @@ java 中可以用任何类型的 `List` 维护邻接表，如 `ArrayList` 和 `L
 
 **临接矩阵表示**
 
-<img src="./images/image-20240819142917947.png" alt="image-20240819142917947" style="zoom:50%;" />
+<img src="./images/image-20240819142917947.png" alt="image-20240819142917947" style="zoom: 33%;" />
 
 以网络来理解：
 
@@ -235,7 +235,7 @@ java 中可以用任何类型的 `List` 维护邻接表，如 `ArrayList` 和 `L
 
 - 临接矩阵不对称
 
-<img src="./images/image-20240819143231134.png" alt="image-20240819143231134" style="zoom:50%;" />
+<img src="./images/image-20240819143231134.png" alt="image-20240819143231134" style="zoom: 33%;" />
 
 ## 5. 图的常见应用
 
