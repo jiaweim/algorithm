@@ -51,7 +51,33 @@
 
 下面讨论的算法将执行 $\lceil \log n\rceil+1$ 次迭代。在第 $k$ 次迭代（$k=0\dots \lceil \log n\rceil$），
 
+## libsais
+
+libsais 是一个用于快速（线性时间）构建后缀数组、LCP和 Burrows-Wheeler transform 的 C 语言库。采用如下论文的诱导排序（induced sorting）算法：
+
+- Ge Nong, Sen Zhang, Wai Hong Chan *Two Efficient Algorithms for Linear Suffix Array Construction*, 2009
+- Juha Karkkainen, Giovanni Manzini, Simon J. Puglisi *Permuted Longest-Common-Prefix Array*, 2009
+- Nataliya Timoshevskaya, Wu-chun Feng *SAIS-OPT: On the characterization and optimization of the SA-IS algorithm for suffix array construction*, 2014
+- Jing Yi Xie, Ge Nong, Bin Lao, Wentao Xu *Scalable Suffix Sorting on a Multicore Machine*, 2020
+
+libsais 提供 C99 API。
+
+### 算法描述
+
+libsais 使用 SA-IS（suffix array induced sorting）算法，通过递归分解和诱导排序构建后缀数组和 Burrows-Wheeler 变换：
+
+- 
+
+## 算法选择
+
+目前最快的算法为：
+
+- libsais: CPU，其次为 divsufsort
+- [libcubwt](https://github.com/IlyaGrebnov/libcubwt): GPU
+
 
 ## 参考
 
 - https://cp-algorithms.com/string/suffix-array.html
+- https://github.com/IlyaGrebnov/libsais/blob/master/Benchmarks.md
+- 《Algorithms on Strings》
