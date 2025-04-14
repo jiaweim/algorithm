@@ -520,3 +520,4 @@ we know BWT **contains** the query, but unlike SA, we do not know the **location
 - https://www.youtube.com/watch?v=kvVGj5V65io
 - https://www.youtube.com/playlist?list=PL2mpR0RYFQsADmYpW2YWBrXJZ_6EL_3nu
 - http://loytynojalab.biocenter.helsinki.fi/data/evogeno/SA_BWT_FMI_lecture.pdf
+- https://www.youtube.com/watch?v=5G2Db41pSHE&list=PL2mpR0RYFQsADmYpW2YWBrXJZ_6EL_3nu
