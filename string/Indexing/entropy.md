@@ -246,6 +246,132 @@ $$
 |C'(S)|\le |S|(H_0(S)+1)
 $$
 
+## High order entropy
+
+当上下文存在关系，即不是 i.i.d 抽样，零级经验熵就不够用了。例如，下表是包含 4,0000 个单词的 bigram 频率。
+
+| th   | 1.52 | en   | 0.55 | ng   | 0.18 |
+| ---- | ---- | ---- | ---- | ---- | ---- |
+| he   | 1.28 | ed   | 0.53 | of   | 0.16 |
+| in   | 0.94 | to   | 0.52 | al   | 0.09 |
+| er   | 0.94 | it   | 0.5  | de   | 0.09 |
+| an   | 0.82 | ou   | 0.5  | se   | 0.08 |
+| re   | 0.68 | ea   | 0.47 | le   | 0.08 |
+| nd   | 0.63 | hi   | 0.46 | sa   | 0.06 |
+| at   | 0.59 | is   | 0.46 | si   | 0.05 |
+| on   | 0.57 | or   | 0.43 | ar   | 0.04 |
+| nt   | 0.56 | ti   | 0.34 | ve   | 0.04 |
+| ha   | 0.56 | as   | 0.33 | ra   | 0.04 |
+| es   | 0.56 | te   | 0.27 | ld   | 0.02 |
+| st   | 0.55 | et   | 0.19 | ur   | 0.02 |
+
+此时 context 很重要，i.i.d 假设不成立。考虑 context，能得到更好的编码，从而更好地压缩数据。
+
+根据 context 不同，采用不同 code，即 $C$ 根据周围符号的不同而改变。
+
+下面将 $a$ 标为红色，将其 right-context 标为蓝色：
+
+<img src="./images/image-20250415094820639.png" alt="image-20250415094820639" style="zoom: 33%;" />
+
+对包含 $k$ 个字母的 context，定义其 code 为 $C_i\in \{C_{\sum^k}\}$
+
+也可以根据 left-context 进行定义：
+
+<img src="./images/image-20250415103110317.png" alt="image-20250415103110317" style="zoom: 33%;" />
+
+那么，如何根据 context 定义 code？
+
+和之前 Huffman 中定义方式相同，只是单词字符的频率，替换为 context 的频率。
+
+例如，以 left-context 定义，$C_{gca}$ 根据在 gca 后出现的次数来定义。
+
+以如下字符串为例：
+
+<img src="./images/image-20250415104432074.png" alt="image-20250415104432074" style="zoom:33%;" />
+
+现在定义以 left-context 为 "a" 的 codes。
+
+令 $S_a$ 为 a 后面字符连接起来的字符串，为：
+$$
+S_a=bcdbabcdb
+$$
+根据 $S_a$ 中字符频率构建 $C_a$：
+$$
+\{a:1,b:4,c:2,d:2,r:0\}
+$$
+
+> [!NOTE]
+>
+> $r$ 频率为 0，因此没有 code。
+
+构建 Huffman tree：
+
+<img src="./images/image-20250415105155413.png" alt="image-20250415105155413" style="zoom:33%;" />
+
+为 edges 分配值：
+
+<img src="./images/image-20250415105222427.png" alt="image-20250415105222427" style="zoom:33%;" />
+
+得到编码：
+$$
+\begin{aligned}
+C_a(a)&=000\\
+C_a(d)&=001\\
+C_a(c)&=01\\
+C_a(b)&=1
+\end{aligned}
+$$
+
+下标 $a$ 表示 left-context 为 $a$。
+
+**示例二**：
+
+字符串为：
+$$
+mississippimississippi
+$$
+$S_i=sspmssp$ (以 $i$ 为 left-context 的字符)。
+
+频率：
+$$
+\{s:4,p:2,m:1\}
+$$
+很容易得到：
+$$
+\begin{aligned}
+C_i(p)&=00\\
+C_i(m)&=01\\
+C_i(s)&=1\\
+\end{aligned}
+$$
+
+- $S_m=ii$, $\{i:2\}$，没有编码
+- $S_p=pipi$，$\{p:2,i:2\}$，得到 $C_p(p)=0$, $C_p(i)=1$
+- $S_s=sisisisi$, $\{s:4,i:4\}$，得到 $C_s(s)=0$, $C_s(i)=1$
+
+总结一下，对字符串：
+$$
+mississippimississippi
+$$
+其 left-context code 如下：
+
+<img src="./images/image-20250415110910024.png" alt="image-20250415110910024" style="zoom: 25%;" />
+
+**定义**：长度为 n 的字符串 $S$ 的高阶熵 $H_k$ 为所有 contexts 下零级经验熵的加权和：
+$$
+H_k(S)=\sum_{t\in \sum^k}\frac{|S_t|}{n}\cdot H_0(S_t)
+$$
+
+$S_t$ 为具有 context $t$ 的所有字符的连接。
+
+根据高阶熵定义，字符串最多可以被压缩到 $\le n(H_k(S)+1)$ bits。
+
+不过，在不同 codes 之间切换，显然会降低性能。
+
+<img src="./images/image-20250415110910024.png" alt="image-20250415110910024" style="zoom: 25%;" />
+
+$k$ 越大（context 长度），可能的 context 越多，存储和切换消耗越大，但压缩性能更好。
+
 ## 参考
 
 - https://www.langmead-lab.org/teaching.html#burrows-wheeler-indexing
