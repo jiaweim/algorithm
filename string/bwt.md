@@ -259,15 +259,15 @@ $$
 
 ## FM Index
 
-In 2000, six years after the BWT was published, Paolo Ferragina and Giovanni Manzini published a paper describing how the BWT, together with some small auxilliary data structures, can be used as a space-efficient index of $T$。It generally uses less than half the space required to store $m$ integers. They named it the *FM Index*。Just as the LF Mapping was the key to understanding how the BWT is reversible, it's also the key to how it can be used as an index.
+2000 年，即 BWT 发布 6 年后，Paolo Ferragina 和 Giovanni Manzini 发表了一片论文，描述如何将 BWT 与小型数据结构结合作为 $T$ 的空间高效索引。索引占用的空间通常不到 $m$ 个整数的一半。他们将其命名为 **FM Index**。LF Mapping 是理解 BWT 逆转换的关键，也是用作索引的关键。
 
-Though BWM is related to suffix array, we can't query it the same way:
+虽然 BWM 与 suffix-array 相关，但是不能以相同方式检索：
 
-<img src="./images/image-20250408144247393.png" alt="image-20250408144247393" style="zoom: 50%;" />
+<img src="./images/image-20250408144247393.png" alt="image-20250408144247393" style="zoom: 33%;" />
 
-We don't have middle columns, binary search isn't possible.
+BWT 没有中间部分，因此不能使用 binary search。
 
-Let's start by considering just the first column (F) and the last column (L) of the BWM, as well as the rank array.
+先来看 BWM 的 F, L 列以及 rank 数组：
 
 ```
 F  L  rank
@@ -280,36 +280,37 @@ b  a  2
 b  a  3
 ```
 
-We will refine this to obtain the FM Index.
+下面分步介绍如何通过这 3 列信息实现 FM Index。
 
-### Searching
+### 搜索
 
-Say we are searching for occurrences of a string $P=aba$. Like the suffix array, the BWM is sorted. This implies that any rows having $P$ as a prefix will be consecutive.
+假设需要搜索字符串 $P=aba$ 的位置。与 suffix-array 类似，BWM 也是排序的，因此以 $P$ 开头的 rows 都是连续的。
 
-We proceed first by finding the rows beginning with the **shortest proper suffix** of $P$: $a$ in this case. The first column is part of our index, so this is trivial. These are the rows in the 0-based range [1,5). Let's visualize this in the context of the whole matrix:
+首先找到以 $P$ 的最短后缀开头的 rows，即以 $a$ 开头的 rows。F 列都已排序，因此很容易找到在 [1,5) 之间（0-based）。下面在整个 matrix 中将其可视化：
 
 <img src="./images/image-20250408140615567.png" alt="image-20250408140615567" style="zoom:50%;" />
 
 > [!NOTE]
 >
-> Even though we just drew the entire matrix, out index so far contains just **F**, **L** and **rank**.
+> 虽然这里给出整个矩阵，但是 index 只使用 **F**, **L** 和 **rank**.
 
-Now we must find all rows beginning with the next-longest proper suffix of $P$: $ba$. Observe the shaded characters in the L above. We see two *b*s, indicating there are two instances where $a$ is preceeded by $b$. Also, the LF Mapping and rank array tell us which rows have $ba$ as prefix: the rows beginning with $b_0$ and $b_1$: i.e. the first two rows in the "b section"。
+接下来检索以 $P$ 长度为 2 后缀开头的 rows，即 $ba$。上图 L 列的高亮部分可以看到 2 个 `b`，表示有两个 `a` 前面是 `b` 的情况。然后根据 LF-Mapping 和 rank 数组可以确定哪些 rows 以 $ba$ 为前缀，即以 $b_0$ 和 $b_1$ 开头的两个 rows：
 
 <img src="./images/image-20250408140956948.png" alt="image-20250408140956948" style="zoom:50%;" />
 
-Now we find rows beginning with the final suffix, $aba$. Again we look at the shaded characters in the last column. We see that the occurrences of $ba$ are preceded by $a_2$ and $a_3$, giving us the range of rows prefixed by $P$:
+接下来检索最后一个后缀 $aba$ 开头的 rows。依然查看 L 列中高亮部分的字符，可以发现 $ba$ 前面可能出现 $a_2$ 和 $a_3$，从而得到以 $P$ 为前缀的 rows 的范围：
 
 <img src="./images/image-20250408141200235.png" alt="image-20250408141200235" style="zoom:50%;" />
 
-This is called *backwards matching*. In short, we apply the LF Mapping repeatedly to ﬁnd the range of rows preﬁxed by successively longer proper suﬃxes of $P$ until the range becomes empty, in which case $P$ does not occur in $T$, or until we run out of suﬃxes. If we run out of suﬃxes, the size of the range equals the number of times $P$ occurs in $T$.
+该过程称为**向后匹配（backwards matching）**。简而言之，反复使用 LF-Mapping 查找以 $P$ 后缀开头的 rows，并不断延长后缀长度，直到 range 为空（表示 $T$ 中没有 $P$），或者后缀长度达到 $P$。如果后缀达到 $P$，range 的大小就等于 $T$ 中 $P$ 出现的次数。
 
-Here is a Python implementation:
+以下是 Python 实现：
 
 ```python
 def countMatches(bw, p):
-    """ Given BWT(T) and a pattern string p, return the number of times
-    p occurs in T. """
+    """
+    给定 BWT(T) 和 pattern 字符串 p，返回 p 在 T 中出现的次数
+    """
     ranks, tots = rankBwt(bw)
     first = firstCol(tots)
     l, r = first[p[-1]]
@@ -334,7 +335,7 @@ def countMatches(bw, p):
     return r - l
 ```
 
-And some example output:
+输出示例：
 
 ```python
 >>> bw = bwt("Tomorrow_and_tomorrow_and_tomorrow")
@@ -358,13 +359,17 @@ And some example output:
 0
 ```
 
-A drawback is that, in each step, we are scanning a **range of elements** in L. This is $O(m)$ (where $m=|T|$).
+但是该方法有几个缺点：
+
+1. 在每一步，需要扫描 L 一定范围的元素，即时间复杂度为 $O(m)$(其中 $m=|T|$)
+2. 保存 ranks 需要占用较多空间
+3. 无法确定 $P$ 在 $T$ 中出现的位置
 
 <img src="./images/image-20250408181810881.png" alt="image-20250408181810881" style="zoom:50%;" />
 
 **Fast rank calculations**
 
-We can make this $O(1)$ by augmenting the rank array in the following way. Instread of a $m\times 1$ *rank* rray, we store a $m\times |\sum|$ *rankAll* matrix. In each row of rankAll, we store an integer for each character of the alphabet equal to the number of times that character has been observed up to and including that position in $BWT(T)$. For example:
+按如下方式扩展 rank 数组可以将第一步扫描时间降低到 $O(1)$。此时存储的不是 $m\times 1$ rank 数组，而是 $m\times|\sum|$ **rankAll** 矩阵。在 rankall 的每个 row，存储 alphabet 中每个字符到目前为止在 $BWT(T)$ 中出现的次数。例如：
 
 ```
         rankAll
@@ -378,11 +383,11 @@ b  a  1  3  2
 b  a  1  4  2
 ```
 
-Now, instead of scanning the last column, we can simply look up the appropriate character of *rankAll* at the left and right extremes of our range. If there is no difference between the two lookups, then the character does not occur. If there are one of more occurrences of the character, the lookups will give the ranks of those occurrences.
+此时，就不需要扫描 L 列，而是直接查看 rankAll 中对应字符在 range 两个端点的数值。如果没有差别，表示在该 range 该字符没有出现，如果出现 1 次或多次，根据两个端点的差值得到结果。
 
 <img src="./images/image-20250408183246554.png" alt="image-20250408183246554" style="zoom:50%;" />
 
-Here is a Python implementation oof this refinement:
+以下是次改进的 Python 实现：
 
 ```python
 def rankAllBwt(bw):
@@ -420,63 +425,63 @@ def countMatches2(bw, p):
 
 ### Rank checkpoints
 
-So far we have assumed that it's resonable to pre-calculate and store the ranks array or *rankAll* matrix. But this is probably not reasonable for larget T. Dividing T into blocks, as is done in compression, is not a good option since our goal is to build an index over all of T.
+预先计算并存储 rank 数组或 rankAll 矩阵会占用较多内存。如果丢弃 rankAll 矩阵的大部分 rows，比如每 32 个 rows 保留 1 个，这样可以节省大量内存。保留的 rows 称为 **rank-checkpoint**。
 
-Instead we discard most but not all of the rows from the *rankAll* matrix. For instance, we might keep one in every 32 rows and discard the rest. We call the retained rows *rank checkpoints*. Now each time we would like to look up `rankAll[c][i]`, we are in one of two cases:
+此时，每次查找 `rankAll[c][i]` 会遇到两种情况：
 
-1. row $i$ was not discarded, in which case we do the lookup as usual
-2. row $i$ was discarded, in which case we scan characters in $L$ starting at $i$ and moving forward (or backward) until we reach the next rank checkpoint.
+1. row-i 没有被丢弃，此时可以直接查找
+2. row-i 被丢弃，此时可以从 $i$ 开始向上后向下扫描 $L$ 中的字符，直到到达下一个 rank-checkpoint
 
 <img src="./images/image-20250408183607472.png" alt="image-20250408183607472" style="zoom:50%;" />
 
-If we count $x$ occurrences of $c$ on our way to a checkpoint at row $i'$, then `rankAll[c][i']-x` given the same value we would have found in `rankAll[c][i]-x`。
+如果在到达第 $i'$ row 的 checkpoint 途中发现 $x$ 个字符 $c$，那么 `rankAll[c][i']-x` 与 `rankAll[c][i]` 相等。
 
-Another example (tally means count)：
+另一个示例（tally 表示计数，比 rank 值大 1）：
 
 <img src="./images/image-20250408184033249.png" alt="image-20250408184033249" style="zoom:50%;" />
 
-If checkpoints are spaced at most $C$ rows from each other, where $C$ is a small constant, then this operation is $O(1)$. In which case, backward search for a pattern $P$ of length $n$ is $O(n)$ time. 
+如果 checkpoints 之间的间隔为 $C$ rows，$C$ 是一个较小的常量，那么操作的时间为 $O(1)$。此时，反向搜索长度为 $n$ 的 pattern  $P$ 的时间为 $O(n)$。
 
-At the expense of adding checkpoints to index, solve the first two problem:
+通过添加 checkpoint，解决了前面 2 个问题：
 
 <img src="./images/image-20250408185032628.png" alt="image-20250408185032628" style="zoom:50%;" />
 
-### Looking up offsets
+### 确定位置
 
-So far we have discussed how to use the FM index to determine whether and how many times a substring $P$ occurs within $T$, but we have not discussed how to find **where** $P$ occurs, i.e., the substring's offset in $T$.
+到目前为止，我们已经讨论如何使用 FM Index 确定子字符串 $P$ 在 $T$ 中是否出现以及出现的次数，但是还没讨论如何确定 $P$ 在 $T$ 中的位置。
 
-If our index included the suffix array $SA(T)$, we could simply look this up in $SA(T)$. For example, here was the range we ended up with after searching for $P=aba$ within $BWT(abaaba\$)$：
+如果上面的 index 包含 suffix-array $SA(T)$，那么直接查看 $SA(T)$ 就可以确定。例如，在 $BWT(abaaba\$)$ 中查找 $P=aba$ 得到如下范围：
 
 <img src="./images/image-20250408170324466.png" alt="image-20250408170324466" style="zoom:50%;" />
 
-$SA(T)$ tells us these matches occurred at $T$ offsets 0 and 3.
+$SA(T)$ 告诉我们匹配位置索引在 $T$ 的 0 和 3 处。
 
-However, the suffix array takes $m$ integers, and we would like to use less space than that. We again use the idea of **discarding** most of the entries and re-creating them as needed: Instead of storing every entry of $SA(T)$, we store, say every $4^{th}$. If we want to look up $SA[3]$ but find it has been discarded (discarded rows given "-" below):
+但是，suffix-array 需要 $m$ 个整数，占用空间太多。我们可以再次使用 rank-checkpoint 思路，即丢掉大部分 suffix-array 值，比如每 4 个存储一个 $SA(T)$ 值。如果需要查找 $SA[3]$，但发现它被丢掉（丢掉的 rows 在下面标记为 "-"）：
 
 <img src="./images/image-20250408170545737.png" alt="image-20250408170545737" style="zoom:50%;" />
 
-We can use LF Mapping to step one position to the left in the text:
+可以使用 LF-Mapping 沿着文本向左移动：
 
 <img src="./images/image-20250408170628880.png" alt="image-20250408170628880" style="zoom:50%;" />
 
-We're still in a discarded row, so we keep stepping until we reach a retained row. This happens after two more steps:
+依然处于被丢掉的 rows，因此继续向左移动，直到到达保留的 rows。这里还需要两步：
 
 <img src="./images/image-20250408170711740.png" alt="image-20250408170711740" style="zoom:50%;" />
 
-$SA(T)$ at this row equals 0 and it took us 3 steps to get here, so we conclude the row we started from had offset 3.
+此时 $SA(T)$ 的值为 0，而我们移动了 3 步，因此起点位置为 3.
 
-Note that if we retain an entry of $SA(T)$ every $C$ positions of $T$, where $C$ is a small constant, then lookintg up the text offset associated with a row of the BWM is $O(1)$。
+如果每 $C$ 个位置保留一个 $SA(T)$ 值，其中 $C$ 是一个很小的常数，那么查找 BWM 指定 row 文本位置的时间为 $O(1)$。
 
-At the expense of adding some SA values to index, solve the last problem.
+通过添加一些 SA 值进行索引，解决了最后一个问题。
 
-Components of the FM Index:
+总结，FM Index 包含：
 
-- First column (F): ~ $|\sum|$ integers, can compress
-- Last column (L): $m$ characters, BWT
-- SA sample: $m\cdot a$ integers, where $a$ is fraction of rows kept
-- checkpoints: $m\times |\sum|\cdot b$ integers, where b is fraction of rows checkpointed
+- 第一列 (F): ~ $|\sum|$ 个整数，可以压缩
+- 最后一列 (L): $m$ 个字符, 对应 BWT
+- SA 样本: $m\cdot a$ 个整数，其中 $a$ 是保留 rows 的比例
+- checkpoints: $m\times |\sum|\cdot b$ 个整数，其中 b 是 rank-checkpoint 比例
 
-## Suffix Arrays, BWT and FM-index
+## Suffix Arrays, BWT 和 FM-index
 
 **Naïve exact search**
 
@@ -484,27 +489,27 @@ Components of the FM Index:
 - Query="nana"
 - Linear search
 
-<img src="./images/image-20250408145101896.png" alt="image-20250408145101896" style="zoom: 33%;" />
+<img src="./images/image-20250408145101896.png" alt="image-20250408145101896" style="zoom: 25%;" />
 
 - Naïve search is too slow
 - Complexity of search scales **linearly** with the length of the text
 
 **Suffix array**
 
-- a space efficient alternative to suffix tree
-- sorted array of all suffixes of a given text
-- allows fast search of very large texts (e.g. genomes)
+- suffix-array 比 suffix-tree 空间效率高
+- 是指定文本所有后缀的排序数组
+- 支持大型文本的快速搜索，如基因组
 
-build suffix array: generate suffixes and then sort alphabetically, the suffix array is the index of the sorted suffix in the original string.
+构建 suffix array: 生成后缀并按字母顺序排序，suffix-array 是排序后的后缀在原字符串中的 index 数组。
 
-<img src="./images/image-20250408145335146.png" alt="image-20250408145335146" style="zoom:33%;" />
+<img src="./images/image-20250408145335146.png" alt="image-20250408145335146" style="zoom: 25%;" />
 
-- search for **prefixes** in the suffix array that match our query string
-- SA is sorted, so we can use binary search
+- 在 suffix-array 中搜索与查询字符串匹配的前缀
+- SA 已排序，因此可以使用 binary search
 
 <img src="./images/image-20250408145702318.png" alt="image-20250408145702318" style="zoom:33%;" />
 
-<img src="./images/image-20250408145735023.png" alt="image-20250408145735023" style="zoom: 33%;" />
+<img src="./images/image-20250408145735023.png" alt="image-20250408145735023" style="zoom: 25%;" />
 
 <img src="./images/image-20250408145813593.png" alt="image-20250408145813593" style="zoom:33%;" />
 
@@ -512,7 +517,7 @@ build suffix array: generate suffixes and then sort alphabetically, the suffix a
 
 **SA vs. naïve search**
 
-Searching the human genome (~3 billion base pairs, n) for a single-end read (100 base pairs, m)
+在人类基因组（约 30 亿个碱基对，记为 n）中搜索单个 read（约 100 个碱基对，记为 m):
 
 - naïve search $O(mn)$
 - suffix array search $O(m\log(n))$
